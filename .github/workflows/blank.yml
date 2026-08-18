@@ -1,0 +1,64 @@
+name: Daily Namecard Rotator
+
+on:
+  schedule:
+    # Runs every day at 00:00 UTC (Adjust time as needed)
+    - cron: '0 0 * * *'
+  # Allows manual triggering from the Actions tab for testing
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rotate-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Rotate Namecard Image
+        run: |
+          # 1. Find all image files inside the Namecards folder sorted deterministically
+          mapfile -t IMAGES < <(find Namecards -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp" \) | sort)
+
+          TOTAL_IMAGES=${#IMAGES[@]}
+          echo "Total images found: $TOTAL_IMAGES"
+
+          if [ "$TOTAL_IMAGES" -eq 0 ]; then
+            echo "No images found in Namecards directory!"
+            exit 1
+          fi
+
+          # 2. Read the current index, defaulting to 0 if the file doesn't exist
+          INDEX=0
+          if [ -f .current_index ]; then
+            INDEX=$(cat .current_index)
+          fi
+
+          # Wrap around using modulo if index exceeds total image count
+          INDEX=$((INDEX % TOTAL_IMAGES))
+
+          # 3. Select image and copy to repo root as namecard.png
+          SELECTED_IMAGE="${IMAGES[$INDEX]}"
+          echo "Selected image [$INDEX]: $SELECTED_IMAGE"
+          cp "$SELECTED_IMAGE" namecard.png
+
+          # 4. Increment index and save back
+          NEXT_INDEX=$(( (INDEX + 1) % TOTAL_IMAGES ))
+          echo "$NEXT_INDEX" > .current_index
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add namecard.png .current_index
+          
+          # Only commit if there are actual changes
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update daily namecard.png"
+            git push
+          else
+            echo "No changes detected."
+          fi
