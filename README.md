@@ -1,7 +1,11 @@
 <!-- DAILY-CARD-START -->
-<a href='https://github.com/ryokr/Namecard/blob/main/namecard.png' target='_blank'>
-<img src='namecard.png' width='860' style='border-radius:10px;margin:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);'/>
-</a>
+# 🎴 Daily Featured Namecard
+
+<div align="center">
+  <img src="namecard.png" width="400" style="border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15);" alt="Daily Namecard" />
+</div>
+
+---
 <!-- DAILY-CARD-END -->
 
 <!-- GALLERY-START -->
