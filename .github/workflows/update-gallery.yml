@@ -1,16 +1,11 @@
-name: Update Gallery
+name: Update README Gallery
 
 on:
   push:
     branches:
       - main
     paths:
-      - '**/*.png'
-      - '**/*.jpg'
-      - '**/*.jpeg'
-      - '**/*.gif'
-      - '**/*.webp'
-      - '**/*.svg'
+      - 'Namecards/**'
   workflow_dispatch:
 
 permissions:
@@ -23,24 +18,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Gallery Section
+      - name: Scan Namecards subfolders and replace Gallery Section in README.md
         run: |
           GITHUB_REPO_URL="${{ github.server_url }}/${{ github.repository }}"
           BRANCH="${{ github.ref_name }}"
           
           GALLERY_FILE="gallery_snippet.tmp"
-          echo "# 🖼️ Image Gallery" > "$GALLERY_FILE"
           echo "---" >> "$GALLERY_FILE"
           echo "" >> "$GALLERY_FILE"
 
-          # Loop top-level folders
-          for folder in */; do
-            folder_name="${folder%/}"
-            
-            # Skip hidden folders (.github, etc.)
-            [[ "$folder_name" =~ ^\. ]] && continue
+          # Check if Namecards directory exists
+          if [ ! -d "Namecards" ]; then
+            echo "Directory 'Namecards' not found!"
+            exit 1
+          fi
 
-            mapfile -t folder_images < <(find "$folder_name" -maxdepth 1 -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.gif" -o -iname "*.webp" -o -iname "*.svg" \) | sort)
+          # Loop through subdirectories inside Namecards/
+          for folder in Namecards/*/; do
+            # Handle case where no subdirectories exist
+            [ -d "$folder" ] || continue
+            
+            # Extract subfolder name (e.g., "Namecards/Anime/" -> "Anime")
+            folder_name=$(basename "$folder")
+            
+            # Find matching images directly inside this subfolder
+            mapfile -t folder_images < <(find "$folder" -maxdepth 1 -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.gif" -o -iname "*.webp" -o -iname "*.svg" \) | sort)
 
             if [ ${#folder_images[@]} -gt 0 ]; then
               echo "## 📂 $folder_name" >> "$GALLERY_FILE"
@@ -59,7 +61,7 @@ jobs:
             fi
           done
 
-          # Inject into README.md between tags
+          # Target-replace ONLY the GALLERY section in README.md
           python3 -c "
           import re
           with open('README.md', 'r') as f:
@@ -70,13 +72,15 @@ jobs:
 
           new_block = f'<!-- GALLERY-START -->\n{gallery_text}\n<!-- GALLERY-END -->'
           pattern = r'<!-- GALLERY-START -->.*?<!-- GALLERY-END -->'
-          
+
           if re.search(pattern, content, flags=re.DOTALL):
               updated = re.sub(pattern, new_block, content, flags=re.DOTALL)
               with open('README.md', 'w') as f:
                   f.write(updated)
+          else:
+              print('Error: <!-- GALLERY-START --> markers missing in README.md!')
           "
-          rm gallery_snippet.tmp
+          rm -f gallery_snippet.tmp
 
       - name: Commit and push gallery updates
         run: |
@@ -86,7 +90,7 @@ jobs:
           git add README.md
           
           if ! git diff --staged --quiet; then
-            git commit -m "chore: update README image gallery"
+            git commit -m "chore: rebuild README image gallery"
             git push
           else
             echo "No gallery changes detected."
