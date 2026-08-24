@@ -3,7 +3,6 @@ name: Daily Namecard Rotator
 on:
   schedule:
     - cron: '0 */12 * * *'
-  # Allows manual triggering from the Actions tab for testing
   workflow_dispatch:
 
 permissions:
@@ -16,47 +15,70 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Rotate Namecard Image
+      - name: Rotate Namecard Image & Update Top README Section
         run: |
-          # 1. Find all image files inside the Namecards folder sorted deterministically
+          # 1. Find all images in Namecards/
           mapfile -t IMAGES < <(find Namecards -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp" \) | sort)
-
           TOTAL_IMAGES=${#IMAGES[@]}
-          echo "Total images found: $TOTAL_IMAGES"
 
           if [ "$TOTAL_IMAGES" -eq 0 ]; then
             echo "No images found in Namecards directory!"
             exit 1
           fi
 
-          # 2. Read the current index, defaulting to 0 if the file doesn't exist
+          # 2. Track index
           INDEX=0
           if [ -f .current_index ]; then
             INDEX=$(cat .current_index)
           fi
-
-          # Wrap around using modulo if index exceeds total image count
           INDEX=$((INDEX % TOTAL_IMAGES))
 
-          # 3. Select image and copy to repo root as namecard.png
           SELECTED_IMAGE="${IMAGES[$INDEX]}"
-          echo "Selected image [$INDEX]: $SELECTED_IMAGE"
+          echo "Selected daily image [$INDEX]: $SELECTED_IMAGE"
           cp "$SELECTED_IMAGE" namecard.png
 
-          # 4. Increment index and save back
+          # Increment and persist index
           NEXT_INDEX=$(( (INDEX + 1) % TOTAL_IMAGES ))
           echo "$NEXT_INDEX" > .current_index
+
+          # 3. Build Daily Content Block
+          DAILY_CONTENT=$(cat << 'EOF'
+          # 🎴 Daily Featured Namecard
+
+          <div align="center">
+            <img src="namecard.png" width="400" style="border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15);" alt="Daily Namecard" />
+          </div>
+
+          ---
+          EOF
+          )
+
+          # 4. Inject into README.md between tags
+          python3 -c "
+          import re
+          with open('README.md', 'r') as f:
+              content = f.read()
+
+          new_block = '''<!-- DAILY-CARD-START -->\n${DAILY_CONTENT}\n<!-- DAILY-CARD-END -->'''
+          pattern = r'<!-- DAILY-CARD-START -->.*?<!-- DAILY-CARD-END -->'
+          
+          if re.search(pattern, content, flags=re.DOTALL):
+              updated = re.sub(pattern, new_block, content, flags=re.DOTALL)
+              with open('README.md', 'w') as f:
+                  f.write(updated)
+          else:
+              print('Markers not found in README.md')
+          "
 
       - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          git add namecard.png .current_index
+          git add namecard.png .current_index README.md
           
-          # Only commit if there are actual changes
           if ! git diff --staged --quiet; then
-            git commit -m "chore: update daily namecard.png"
+            git commit -m "chore: update daily namecard"
             git push
           else
             echo "No changes detected."
