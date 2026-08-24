@@ -5,4 +5,8 @@
 <!-- DAILY-CARD-END -->
 
 <!-- GALLERY-START -->
+# 🖼️ Image Gallery
+---
+
+
 <!-- GALLERY-END -->
