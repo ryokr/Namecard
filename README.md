@@ -106,9 +106,6 @@
 <a href="https://github.com/ryokr/Namecard/blob/main/Namecards/Achievement/UI_NameCardPic_MusicGame01_P.png" target="_blank">
   <img src="Namecards/Achievement/UI_NameCardPic_MusicGame01_P.png" width="220" style="border-radius:10px;margin:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
 </a>
-<a href="https://github.com/ryokr/Namecard/blob/main/Namecards/Achievement/UI_NameCardPic_Mxsy_P.png" target="_blank">
-  <img src="Namecards/Achievement/UI_NameCardPic_Mxsy_P.png" width="220" style="border-radius:10px;margin:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
-</a>
 <a href="https://github.com/ryokr/Namecard/blob/main/Namecards/Achievement/UI_NameCardPic_Natlan Fleeting Dreams_P.png" target="_blank">
   <img src="Namecards/Achievement/UI_NameCardPic_Natlan Fleeting Dreams_P.png" width="220" style="border-radius:10px;margin:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
 </a>
