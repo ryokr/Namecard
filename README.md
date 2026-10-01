@@ -298,9 +298,6 @@
 <a href="https://github.com/ryokr/Namecard/blob/main/Namecards/Battle Pass/UI_NameCardPic_Bp35_P.png" target="_blank">
   <img src="Namecards/Battle Pass/UI_NameCardPic_Bp35_P.png" width="220" style="border-radius:10px;margin:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
 </a>
-<a href="https://github.com/ryokr/Namecard/blob/main/Namecards/Battle Pass/UI_NameCardPic_Bp36_P.png" target="_blank">
-  <img src="Namecards/Battle Pass/UI_NameCardPic_Bp36_P.png" width="220" style="border-radius:10px;margin:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
-</a>
 <a href="https://github.com/ryokr/Namecard/blob/main/Namecards/Battle Pass/UI_NameCardPic_Bp37_P.png" target="_blank">
   <img src="Namecards/Battle Pass/UI_NameCardPic_Bp37_P.png" width="220" style="border-radius:10px;margin:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
 </a>
