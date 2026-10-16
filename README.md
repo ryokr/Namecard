@@ -369,9 +369,6 @@
 
 ## 📂 Character
 
-<a href="https://github.com/ryokr/Namecard/blob/main/Namecards/Character/UI_NameCardPic_0_P.png" target="_blank">
-  <img src="Namecards/Character/UI_NameCardPic_0_P.png" width="220" style="border-radius:10px;margin:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
-</a>
 <a href="https://github.com/ryokr/Namecard/blob/main/Namecards/Character/UI_NameCardPic_Aino_P.png" target="_blank">
   <img src="Namecards/Character/UI_NameCardPic_Aino_P.png" width="220" style="border-radius:10px;margin:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
 </a>
